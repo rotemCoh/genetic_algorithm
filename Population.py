@@ -1,8 +1,7 @@
 from Person import Person
-import collections
 
 class Population:
-    def __init__(self,code, num_of_people):
+    def __init__(self, code, num_of_people):
         self.code = code
         self.people = []
         self.generations = 0
@@ -22,6 +21,7 @@ class Population:
     def fitness(self):
         word_freq = self.load_word_frequency("dict.txt")
         letter_freq = self.load_letter_frequency("Letter_Freq.txt")
+        print(letter_freq)
         letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
 
         for person in self.people:
@@ -34,25 +34,24 @@ class Population:
                 clean_word = self.clean_word(word)
                 if clean_word in word_freq:
                     person_fitness += word_freq[clean_word]
-            # Calculate letter frequency fitness
-            letter_counter = []
-            for l in code:
-                    letter_counter.append(l)
-            for lt in letter_counter:
-                if lt.isalpha():
-                    if lt in letter_freq:
-                        person_fitness += letter_freq[letter] * freq
+                else:
+                    # Calculate letter frequency fitness
+                    letter_counter = []
+                    for l in code:
+                        letter_counter.append(l)
+                    for lt in letter_counter:
+                        if lt.isalpha():
+                            if lt.upper() in letter_freq:
+                                person_fitness += letter_freq[lt.upper()]
 
-            # Calculate letter combination frequency fitness
-            for i in range(len(code) - 1):
-                letter_combination = code[i:i+2]
-                if letter_combination.isalpha():
-                    if letter_combination in letter2_freq:
-                        person_fitness += letter2_freq[letter_combination]
+                    # Calculate letter combination frequency fitness
+                    for i in range(len(code) - 1):
+                        letter_combination = code[i:i + 2]
+                        if letter_combination.isalpha():
+                            if letter_combination.upper() in letter2_freq:
+                                person_fitness += letter2_freq[letter_combination.upper()]
 
-                person.fitness = person_fitness
-                
-
+                        person.fitness = person_fitness
 
     def load_word_frequency(self, filename):
         word_freq = {}
@@ -67,9 +66,9 @@ class Population:
         with open(filename, "r") as file:
             for line in file:
                 if "#" not in line:
-                    striped = line.strip()
+                    striped = line.strip("\n")
                     if len(striped) >= 2:
-                        freq, letter = striped[:2]
+                        freq, letter = striped.split()
                         letter_freq[letter] = float(freq)
         return letter_freq
 
