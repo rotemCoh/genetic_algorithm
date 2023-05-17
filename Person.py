@@ -1,12 +1,17 @@
 import random
 import string
 class Person:
-    def __init__(self, code,fitness):
+    def __init__(self, code, fitness):
         self.code = code
         self.alphabet = {}
         self.alphabet = self.generate_random_alphabet()
         self.update_code()
         self.fitness = fitness
+
+    def __init__(self, code, fitness, alphabet):
+        self.code = code
+        self.fitness = fitness
+        self.alphabet = alphabet
 
     def update_code(self):
         updated_code = ""
@@ -16,7 +21,7 @@ class Person:
             else:
                 updated_code += char
         self.code = updated_code
-        
+
     def generate_random_alphabet(self):
         alphabet = {'A': 't', 'B': 'g', 'C': 'o', 'D': 'n', 'E': 'b', 'F': 'h', 'G': 'i', 'H': 'v', 'I': 'j', 'J': 'z', 'K': 'k', 'L': 'y', 'M': 'w', 'N': 'm', 'O': 'x', 'P': 'd', 'Q': 'q', 'R': 'p', 'S': 'c', 'T': 'a', 'U': 'r',
         'V': 'e', 'W': 's', 'X': 'u', 'Y': 'f', 'Z': 'l'}
@@ -32,6 +37,9 @@ class Person:
         return self.code
     def get_fitnees(self):
         return self.fitness
+    def get_alphabet(self):
+        return self.alphabet
+
 
 
 

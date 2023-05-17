@@ -4,11 +4,12 @@ def main():
     given_code = "xaac, cbz"
     #test = Person(given_code, 0)
     #print(test.get_code())
-    test = Population(given_code,20)
+    test = Population(given_code, 100)
     test.generate_random_population()
     test.fitness()
     for p in test.people:
         print(p.get_fitnees())
+    test.new_generation()
     # taco = test.get_people()
     # for t in taco:
     #     print(t.get_code())
