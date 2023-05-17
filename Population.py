@@ -74,4 +74,21 @@ class Population:
 
     def clean_word(self, word):
         return word.strip(",.;")
+
+    def new_generation(self):
+        new_people = []
+        top_five = int(self.num_of_people*0.05)
+        temp_fitness = 0
+        best_string = ''
+        best_dict = {}
+        for p in self.people:
+            if p.get_fitnees() > temp_fitness:
+                temp_fitness = p.get_fitnees()
+                best_string = p.get_code()
+                best_dict = p.get_alphabet()
+
+        for i in range(top_five):
+            new_people.append(Person(best_string, 0, best_dict))
+        for a in new_people:
+            print(a.get_code())
     
