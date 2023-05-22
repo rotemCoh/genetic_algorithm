@@ -36,7 +36,7 @@ class Population:
         letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
 
         for person in self.people:
-            code = person.get_code()
+            code = person.get_new_code()
             person_fitness = 0
 
             # Calculate word frequency fitness
@@ -102,4 +102,11 @@ class Population:
             new_people.append(Person(best_string, 0, best_dict))
         for a in new_people:
             print(a.get_code())
-    
+
+    def crossover(self, alphabet1, alphabet2):
+        # get the values of every dict
+        values1 = ' '.join(map(str, alphabet1.values()))
+        values2 = ' '.join(map(str, alphabet2.values()))
+        print(values1)
+        print(values2)
+
