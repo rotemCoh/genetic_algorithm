@@ -1,4 +1,5 @@
 from Person import Person
+import random
 
 class Population:
     def __init__(self, code, num_of_people):
@@ -6,11 +7,21 @@ class Population:
         self.people = []
         self.generations = 0
         self.num_of_people = num_of_people
+    def generate_random_alphabet(self):
+        alphabet = {'A': 't', 'B': 'g', 'C': 'o', 'D': 'n', 'E': 'b', 'F': 'h', 'G': 'i', 'H': 'v', 'I': 'j', 'J': 'z', 'K': 'k', 'L': 'y', 'M': 'w', 'N': 'm', 'O': 'x', 'P': 'd', 'Q': 'q', 'R': 'p', 'S': 'c', 'T': 'a', 'U': 'r',
+        'V': 'e', 'W': 's', 'X': 'u', 'Y': 'f', 'Z': 'l'}
+        random_alphabet = {}
+        available_letters = list('abcdefghijklmnopqrstuvwxyz')
+        for key in alphabet:
+            random_index = random.randint(0, len(available_letters) - 1)
+            random_letter = available_letters.pop(random_index)
+            random_alphabet[key] = random_letter
+        return random_alphabet
 
     def generate_random_population(self):
         population = []
-        for _ in range(self.num_of_people):
-            person = Person(self.code, 0)
+        for p in range(self.num_of_people):
+            person = Person(self.code, 0, self.generate_random_alphabet())
             self.people.append(person)
         return population
 
