@@ -1,17 +1,17 @@
 import random
-import string
 class Person:
-    def __init__(self, code, fitness):
-        self.code = code
-        self.alphabet = {}
-        self.alphabet = self.generate_random_alphabet()
-        self.update_code()
-        self.fitness = fitness
+    # def __init__(self, code, fitness):
+    #     self.code = code
+    #     self.alphabet = {}
+    #     self.alphabet = self.generate_random_alphabet()
+    #     self.update_code()
+    #     self.fitness = fitness
 
     def __init__(self, code, fitness, alphabet):
         self.code = code
         self.fitness = fitness
         self.alphabet = alphabet
+        self.update_code()
 
     def update_code(self):
         updated_code = ""
@@ -22,16 +22,34 @@ class Person:
                 updated_code += char
         self.code = updated_code
 
-    def generate_random_alphabet(self):
-        alphabet = {'A': 't', 'B': 'g', 'C': 'o', 'D': 'n', 'E': 'b', 'F': 'h', 'G': 'i', 'H': 'v', 'I': 'j', 'J': 'z', 'K': 'k', 'L': 'y', 'M': 'w', 'N': 'm', 'O': 'x', 'P': 'd', 'Q': 'q', 'R': 'p', 'S': 'c', 'T': 'a', 'U': 'r',
-        'V': 'e', 'W': 's', 'X': 'u', 'Y': 'f', 'Z': 'l'}
-        random_alphabet = {}
-        available_letters = list('abcdefghijklmnopqrstuvwxyz')
-        for key in alphabet:
-            random_index = random.randint(0, len(available_letters) - 1)
-            random_letter = available_letters.pop(random_index)
-            random_alphabet[key] = random_letter
-        return random_alphabet
+    def mutate(self):
+        # Select a random position in the code
+        print(self.code)
+        print(self.alphabet)
+        # Filter out non-letter characters
+        letters = [char for char in self.code if char.isalpha()]
+
+        # Randomly choose a letter to replace
+        if letters:
+            letter_to_replace = random.choice(letters)
+
+        # Randomly choose a replacement letter
+        replacement_letter = random.choice(list(self.alphabet.keys()))
+
+        # Replace the chosen letter with the replacement letter
+        updated_text = self.code.replace(letter_to_replace, replacement_letter.lower())
+        # wanted_key = {i for i in self.alphabet if self.alphabet[i] == replacement_letter.lower()}
+        # # print(wanted_key)
+        # self.alphabet.update({list(wanted_key)[0]: letter_to_replace})
+
+        self.alphabet.update({replacement_letter.upper(): letter_to_replace})
+        # self.alphabet.update({letter_to_replace: replacement_letter.upper()})
+
+
+
+        print(updated_text)
+        print(self.alphabet)
+
 
     def get_code(self):
         return self.code
