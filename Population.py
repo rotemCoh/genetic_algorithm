@@ -30,47 +30,77 @@ class Population:
     def get_people(self):
         return self.people
 
-    def fitness(self):
-        word_dict = self.load_word_frequency("dict.txt")
-        letter_freq = self.load_letter_frequency("Letter_Freq.txt")
-        letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
+    def clean_code(self, code):
+        words_list = code.split()
+        clean_list = []
+        for word in words_list:
+            clean_word = word.strip(",.;")
+            clean_list.append(clean_word)
+        return clean_list
 
-        for person in self.people:
-            code = person.get_new_code()
-            person_fitness = 0
 
-            # Calculate word frequency fitness
-            words = code.split()
-            for word in words:
-                clean_word = self.clean_word(word)
-                if clean_word in word_dict:
-                    person_fitness += word_dict[clean_word]
-                else:
-                    # Calculate letter frequency fitness
-                    letter_counter = []
-                    for l in code:
-                        letter_counter.append(l)
-                    for lt in letter_counter:
-                        if lt.isalpha():
-                            if lt.upper() in letter_freq:
-                                person_fitness += letter_freq[lt.upper()]
-
-                    # Calculate letter combination frequency fitness
-                    for i in range(len(code) - 1):
-                        letter_combination = code[i:i + 2]
-                        if letter_combination.isalpha():
-                            if letter_combination.upper() in letter2_freq:
-                                person_fitness += letter2_freq[letter_combination.upper()]
-
-                        person.fitness = person_fitness
-
-    def load_word_frequency(self, filename):
-        word_dict = {}
+    def words_from_dict(self,filename):
+        words_from_dict = []
         with open(filename, "r") as file:
             for line in file:
-                word = self.clean_word(line.strip())
-                word_dict[word] = 1  # Assign a fixed frequency of 1 for each word
-        return word_dict
+                line = line.strip()
+                words_from_dict.append(line)
+        return words_from_dict
+
+    def find_word(self, words_list, word):
+        for w in words_list:
+            if w == word:
+                return 100
+
+
+
+    def fitness(self):
+        #word_dict = self.load_word_frequency("dict.txt")
+        #letter_freq = self.load_letter_frequency("Letter_Freq.txt")
+        #letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
+        word_list_from_file = self.words_from_dict("dict.txt")
+        test = "good"
+        self.find_word(word_list_from_file, test)
+
+        # for person in self.people:
+            #code = person.get_new_code()
+            #person_fitness = 0
+            # cleaned_code = self.clean_code(code)
+            # for word in cleaned_code:
+            #     self.find_word(word_list_from_file, code)
+
+
+    #         # Calculate word frequency fitness
+    #         words = code.split()
+    #         for word in words:
+    #             clean_word = self.clean_word(word)
+    #             if clean_word in word_dict:
+    #                 person_fitness += word_dict[clean_word]
+    #             else:
+    #                 # Calculate letter frequency fitness
+    #                 letter_counter = []
+    #                 for l in code:
+    #                     letter_counter.append(l)
+    #                 for lt in letter_counter:
+    #                     if lt.isalpha():
+    #                         if lt.upper() in letter_freq:
+    #                             person_fitness += letter_freq[lt.upper()]
+    #
+    #                 # Calculate letter combination frequency fitness
+    #                 for i in range(len(code) - 1):
+    #                     letter_combination = code[i:i + 2]
+    #                     if letter_combination.isalpha():
+    #                         if letter_combination.upper() in letter2_freq:
+    #                             person_fitness += letter2_freq[letter_combination.upper()]
+    #
+    #                     person.fitness = person_fitness
+
+    # def load_word_frequency(self, filename):
+    #     word_dict = {}
+    #     with open(filename, "r") as file:
+    #         # for line in file:
+    #         #     word = self.clean_code(line.strip())
+    #     return word_dict
 
     def load_letter_frequency(self, filename):
         letter_freq = {}
@@ -82,9 +112,6 @@ class Population:
                         freq, letter = striped.split()
                         letter_freq[letter] = float(freq)
         return letter_freq
-
-    def clean_word(self, word):
-        return word.strip(",.;")
 
     def new_generation(self):
         new_people = []
@@ -115,6 +142,7 @@ class Population:
 
         self.people = new_people
         self.generations = self.generations + 1
+        print(self.generations)
         #for i in self.people:
         #    print(i.get_new_code())
         return best_string , best_dict
