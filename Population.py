@@ -38,7 +38,6 @@ class Population:
             clean_list.append(clean_word)
         return clean_list
 
-
     def words_from_dict(self,filename):
         words_from_dict = []
         with open(filename, "r") as file:
@@ -48,26 +47,59 @@ class Population:
         return words_from_dict
 
     def find_word(self, words_list, word):
+        max_grade = 0  # Track the maximum grade encountered
         for w in words_list:
             if w == word:
                 return 100
+            word_length = len(word)
+            diff_count = 0  # Count of differing letters
+            if len(w) != word_length:
+                continue  # Skip words with different lengths
+            for i in range(word_length):
+                if w[i] != word[i]:
+                    diff_count += 1
 
+            if diff_count <= word_length // 2:
+                grade = 100 - (diff_count * 10)
+                if grade > max_grade:
+                    max_grade = grade
 
+        if max_grade > 0:
+            return max_grade
+        else:
+            return None  # Word not found in dictionary or Letter2_Freg.txt
+
+    def grade_2letter(self, letter2_freq, word):
+        grade = 0
+        for i in range(len(word) - 1):
+            letter_combination = word[i:i + 2]
+            if letter_combination.isalpha():
+                if letter_combination.upper() in letter2_freq:
+                    grade += letter2_freq[letter_combination.upper()]
+        return grade
 
     def fitness(self):
-        #word_dict = self.load_word_frequency("dict.txt")
         #letter_freq = self.load_letter_frequency("Letter_Freq.txt")
-        #letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
+        letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
         word_list_from_file = self.words_from_dict("dict.txt")
-        test = "good"
-        self.find_word(word_list_from_file, test)
+        #test = "abuse"
+        #print(self.find_word(word_list_from_file, test))
+        #print(self.grade_2letter(letter2_freq, test))
 
-        # for person in self.people:
-            #code = person.get_new_code()
-            #person_fitness = 0
-            # cleaned_code = self.clean_code(code)
-            # for word in cleaned_code:
-            #     self.find_word(word_list_from_file, code)
+        for person in self.people:
+            code = person.get_new_code()
+            person_fitness = 0
+            cleaned_code = self.clean_code(code)
+            for word in cleaned_code:
+                grade =  self.find_word(word_list_from_file, word)
+                if grade != None:
+                    person_fitness += grade
+                else:
+                    person_fitness += self.grade_2letter(letter2_freq, word)
+            person.fitness = person_fitness
+            # print(person_fitness)
+            # print(code)
+
 
 
     #         # Calculate word frequency fitness
