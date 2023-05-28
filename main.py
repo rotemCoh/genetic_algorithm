@@ -2,14 +2,14 @@ from Person import Person
 from Population import Population
 import random
 def main():
-
-
-    given_code = "xaac ,cbz"
-    test = Population(given_code, 10)
+    with open('enc.txt', 'r') as file:
+        given_code = file.read().replace('\n', '')
+    test = Population(given_code, 200)
     test.generate_random_population()
     flag_for_generation = 0
     best_string = ""
     temp_string = ""
+    best_fit = 0
     best_dict = {}
     temp_dict = {}
 
@@ -17,16 +17,18 @@ def main():
     while(flag_for_generation < 11):
         if test.generations == 0:
             test.fitness()
-            best_string, best_dict = test.new_generation()
+            best_string, best_dict, fitness = test.new_generation()
             temp_string = best_string
         else:
             test.fitness()
-            temp_string, temp_dict = test.new_generation()
-        if best_string == temp_string:
-            flag_for_generation = flag_for_generation + 1
-            best_dict = temp_dict
+            temp_string, temp_dict, fitness = test.new_generation()
+        if fitness == best_fit:
+            flag_for_generation += 1
         else:
             best_string = temp_string
+            best_dict = temp_dict
+            best_fit = fitness
+            flag_for_generation = 0
 
     print(best_dict)
     with open("plain.txt", "w") as file:
