@@ -6,7 +6,7 @@ class Person:
         self.code = code
         self.fitness = fitness
         self.alphabet = alphabet
-        self.new_code = ""
+        self.new_code = ""        
 
     # funtion that update the code after a change.
     def update_code(self):

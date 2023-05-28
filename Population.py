@@ -1,6 +1,9 @@
 from Person import Person
 import random
 import string
+import math
+from Levenshtein import distance
+from copy import deepcopy
 
 class Population:
     def __init__(self, code, num_of_people):
@@ -39,53 +42,61 @@ class Population:
         return clean_list
 
     def words_from_dict(self,filename):
-        words_from_dict = []
+        words_from_dict = {}
         with open(filename, "r") as file:
             for line in file:
                 line = line.strip()
-                words_from_dict.append(line)
+                line_length = len(line)
+                words_from_dict.setdefault(line_length, []).append(line)
         return words_from_dict
 
-    def find_word(self, words_list, word):
-        max_grade = 0  # Track the maximum grade encountered
-        for w in words_list:
-            if w == word:
+    def find_word(self, words_dict, word):
+        #max_grade = 0  # Track the maximum grade encountered
+        haming_dist = 0
+        word_length = len(word)
+        if word_length in words_dict:
+            if word in words_dict[word_length]:
                 return 100
-            word_length = len(word)
-            diff_count = 0  # Count of differing letters
-            if len(w) != word_length:
-                continue  # Skip words with different lengths
-            for i in range(word_length):
-                if w[i] != word[i]:
-                    diff_count += 1
-
-            if diff_count <= word_length // 2:
-                grade = 100 - (diff_count * 10)
-                if grade > max_grade:
-                    max_grade = grade
-
-        if max_grade > 0:
-            return max_grade
-        else:
-            return None  # Word not found in dictionary or Letter2_Freg.txt
+            else:
+                haming_dist = min([distance(w, word) for w in words_dict[word_length]])
+                if haming_dist <=math.floor(word_length/2):
+                    return (1-haming_dist/len(word))*100
+            if haming_dist > 0:
+                return haming_dist
+            else:
+                return None
+        # for w in words_list:
+        #     if w == word:
+        #         return 100
+        #     word_length = len(word)
+        #     if len(w) != word_length:
+        #         continue  # Skip words with different lengths
+        #     haming_dist = 0
+        #     haming_dist = min([distance(w, word) for w in words_list])
+        #     if haming_dist <=math.floor(word_length/2):
+        #         return (1-haming_dist/len(word))*100
+        # if haming_dist > 0:
+        #     return haming_dist
+        # else:
+        #     return None
 
     def grade_2letter(self, letter2_freq, word):
+        one_letter_check = len(word) -1
+        if one_letter_check == 0:
+            return 0
         grade = 0
+        count = len(word)
         for i in range(len(word) - 1):
             letter_combination = word[i:i + 2]
             if letter_combination.isalpha():
                 if letter_combination.upper() in letter2_freq:
                     grade += letter2_freq[letter_combination.upper()]
-        return grade
-
+        final_grade = grade*1000
+        return final_grade/(count-1)
+    
     def fitness(self):
-        #letter_freq = self.load_letter_frequency("Letter_Freq.txt")
         letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
         word_list_from_file = self.words_from_dict("dict.txt")
-        #test = "abuse"
-        #print(self.find_word(word_list_from_file, test))
-        #print(self.grade_2letter(letter2_freq, test))
-
         for person in self.people:
             code = person.get_new_code()
             person_fitness = 0
@@ -96,43 +107,70 @@ class Population:
                     person_fitness += grade
                 else:
                     person_fitness += self.grade_2letter(letter2_freq, word)
-            person.fitness = person_fitness
-            # print(person_fitness)
-            # print(code)
+            final_fit = person_fitness/len(cleaned_code)
+
+        
+
+            person.fitness = final_fit
+        
+    
 
 
+    # def fitness(self):
+    #     #letter_freq = self.load_letter_frequency("Letter_Freq.txt")
+    #     letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
+    #     word_list_from_file = self.words_from_dict("dict.txt")
+    #     #test = "abuse"
+    #     #print(self.find_word(word_list_from_file, test))
+    #     #print(self.grade_2letter(letter2_freq, test))
 
-    #         # Calculate word frequency fitness
-    #         words = code.split()
-    #         for word in words:
-    #             clean_word = self.clean_word(word)
-    #             if clean_word in word_dict:
-    #                 person_fitness += word_dict[clean_word]
+    #     for person in self.people:
+    #         code = person.get_new_code()
+    #         person_fitness = 0
+    #         cleaned_code = self.clean_code(code)
+    #         for word in cleaned_code:
+    #             grade =  self.find_word(word_list_from_file, word)
+    #             if grade != None:
+    #                 person_fitness += grade
     #             else:
-    #                 # Calculate letter frequency fitness
-    #                 letter_counter = []
-    #                 for l in code:
-    #                     letter_counter.append(l)
-    #                 for lt in letter_counter:
-    #                     if lt.isalpha():
-    #                         if lt.upper() in letter_freq:
-    #                             person_fitness += letter_freq[lt.upper()]
-    #
-    #                 # Calculate letter combination frequency fitness
-    #                 for i in range(len(code) - 1):
-    #                     letter_combination = code[i:i + 2]
-    #                     if letter_combination.isalpha():
-    #                         if letter_combination.upper() in letter2_freq:
-    #                             person_fitness += letter2_freq[letter_combination.upper()]
-    #
-    #                     person.fitness = person_fitness
+    #                 person_fitness += self.grade_2letter(letter2_freq, word)
+    #         person.fitness = person_fitness
+    #         # print(person_fitness)
+    #         # print(code)
 
-    # def load_word_frequency(self, filename):
-    #     word_dict = {}
-    #     with open(filename, "r") as file:
-    #         # for line in file:
-    #         #     word = self.clean_code(line.strip())
-    #     return word_dict
+
+
+    # #         # Calculate word frequency fitness
+    # #         words = code.split()
+    # #         for word in words:
+    # #             clean_word = self.clean_word(word)
+    # #             if clean_word in word_dict:
+    # #                 person_fitness += word_dict[clean_word]
+    # #             else:
+    # #                 # Calculate letter frequency fitness
+    # #                 letter_counter = []
+    # #                 for l in code:
+    # #                     letter_counter.append(l)
+    # #                 for lt in letter_counter:
+    # #                     if lt.isalpha():
+    # #                         if lt.upper() in letter_freq:
+    # #                             person_fitness += letter_freq[lt.upper()]
+    # #
+    # #                 # Calculate letter combination frequency fitness
+    # #                 for i in range(len(code) - 1):
+    # #                     letter_combination = code[i:i + 2]
+    # #                     if letter_combination.isalpha():
+    # #                         if letter_combination.upper() in letter2_freq:
+    # #                             person_fitness += letter2_freq[letter_combination.upper()]
+    # #
+    # #                     person.fitness = person_fitness
+
+    # # def load_word_frequency(self, filename):
+    # #     word_dict = {}
+    # #     with open(filename, "r") as file:
+    # #         # for line in file:
+    # #         #     word = self.clean_code(line.strip())
+    # #     return word_dict
 
     def load_letter_frequency(self, filename):
         letter_freq = {}
@@ -148,7 +186,7 @@ class Population:
     def new_generation(self):
         new_people = []
         top_five = int(self.num_of_people*0.05)
-        twenty_percent = int(self.num_of_people*0.2)
+        sixty_percent = int(self.num_of_people*0.6)
         temp_fitness = 0
         best_string = ''
         best_dict = {}
@@ -157,43 +195,57 @@ class Population:
                 temp_fitness = p.get_fitness()
                 best_string = p.get_new_code()
                 best_dict = p.get_alphabet()
+        print(temp_fitness)
+        amount = temp_fitness/10
+        amount = math.ceil((self.num_of_people/100)*amount)
 
-        for i in range(top_five):
-            new_people.append(Person(best_string, 0, best_dict))
+        for i in range(amount):
+            new_people.append(Person(p.get_code(), 0, deepcopy(best_dict)))
+        for p in new_people:
+            p.update_code()
+
 
         self.prepering_for_crossover()
 
-        #indexes = list(range(len(self.people)))
-        random_indexes = random.sample(range(len(self.people)), twenty_percent)
+        random_indexes = random.sample(range(len(self.people)), sixty_percent)
 
         for index in random_indexes:
-            self.people[index].mutate()
+           self.people[index].mutate()
 
-        for y in range(self.num_of_people - top_five):
-            new_people.append(self.people[y])
-
+        for y in range(self.num_of_people - amount):
+            new_people.append(deepcopy(self.people[y]))
+        for p in new_people:
+            p.update_code()
         self.people = new_people
+        print("population leangth: " +str(len(self.people)))
         self.generations = self.generations + 1
+        # for p in self.people:
+        #     print(p.get_new_code())
         print(self.generations)
-        #for i in self.people:
-        #    print(i.get_new_code())
-        return best_string , best_dict
+        return best_string , best_dict, temp_fitness
 
     def prepering_for_crossover(self):
         # Get the indexes of the people
-        indexes = list(range(len(self.people)))
+        savion = []
+        for p in self.people:
+            for _ in range(int(p.get_fitness())):
+                savion.append(deepcopy(p))
+
+        indexes = list(range(len(savion)))
 
         # Create a list of tuples with two randomly selected people
         pairs = []
-        while len(indexes) >= 2:
+        while len(pairs) <= self.num_of_people/2:
             random_pair_indexes = random.sample(indexes, 2)
-            random_pair = (self.people[random_pair_indexes[0]], self.people[random_pair_indexes[1]])
+            random_pair = (savion[random_pair_indexes[0]], savion[random_pair_indexes[1]])
             pairs.append(random_pair)
-            indexes.remove(random_pair_indexes[0])
-            indexes.remove(random_pair_indexes[1])
+            #indexes.remove(random_pair_indexes[0])
+            #indexes.remove(random_pair_indexes[1])
 
         for t in pairs:
             self.crossover(t)
+
+
 
     def crossover(self, couple_of_people):
         person1, person2 = couple_of_people
@@ -229,8 +281,6 @@ class Population:
         #print("after: " + str(person1.get_new_code()))
         person2.alphabet = new_alphabet2
         person2.update_code()
-
-
 
     # function that replaces duplicated letter with None
     def add_None_values(self, crossover_result):
