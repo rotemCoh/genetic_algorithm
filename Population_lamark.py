@@ -5,12 +5,15 @@ import math
 from Levenshtein import distance
 from copy import deepcopy
 
-class Population:
-    def __init__(self, code, num_of_people):
+class Population_lamark:
+    def __init__(self, code, num_of_people, num_mutations):
         self.code = code
         self.people = []
         self.generations = 0
+        self.num_mutations = num_mutations
         self.num_of_people = num_of_people
+        letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
+        word_list_from_file = self.words_from_dict("dict.txt")
     def generate_random_alphabet(self):
         alphabet = {'A': 't', 'B': 'g', 'C': 'o', 'D': 'n', 'E': 'b', 'F': 'h', 'G': 'i', 'H': 'v', 'I': 'j', 'J': 'z', 'K': 'k', 'L': 'y', 'M': 'w', 'N': 'm', 'O': 'x', 'P': 'd', 'Q': 'q', 'R': 'p', 'S': 'c', 'T': 'a', 'U': 'r',
         'V': 'e', 'W': 's', 'X': 'u', 'Y': 'f', 'Z': 'l'}
@@ -81,23 +84,31 @@ class Population:
         return final_grade/(count-1)
     
     def fitness(self):
-        letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
-        word_list_from_file = self.words_from_dict("dict.txt")
         for person in self.people:
             code = person.get_new_code()
             person_fitness = 0
             cleaned_code = self.clean_code(code)
             for word in cleaned_code:
-                grade =  self.find_word(word_list_from_file, word)
+                grade =  self.find_word(self.word_list_from_file, word)
                 if grade != None:
                     person_fitness += grade
                 else:
-                    person_fitness += self.grade_2letter(letter2_freq, word)
+                    person_fitness += self.grade_2letter(self.letter2_freq, word)
             final_fit = person_fitness/len(cleaned_code)
-
-        
-
             person.fitness = final_fit
+
+    def fitness_for_one(self, person):
+        code = person.get_new_code()
+        person_fitness = 0
+        cleaned_code = self.clean_code(code)
+        for word in cleaned_code:
+            grade =  self.find_word(self.word_list_from_file, word)
+            if grade != None:
+                person_fitness += grade
+            else:
+                person_fitness += self.grade_2letter(self.letter2_freq, word)
+        final_fit = person_fitness/len(cleaned_code)
+        person.fitness = final_fit
 
     def load_letter_frequency(self, filename):
         letter_freq = {}
@@ -109,10 +120,22 @@ class Population:
                         freq, letter = striped.split()
                         letter_freq[letter] = float(freq)
         return letter_freq
+    
+    def lamark(self):
+        for person in self.people:
+            temp_person = Person(person.get_code(), person.get_fitness(), deepcopy(person.get_alphabet()))
+            for m in range(self.num_mutations):
+                temp_person.mutate()
+            self.fitness_for_one(temp_person)
+            if temp_person.get_fitness() > person.get_fitness():
+                person.fitness = temp_person.fitness
+                person.alphabet = temp_person.alphabet
+                person.new_code = temp_person.new_code
+
 
     def new_generation(self):
+        self.lamark()
         new_people = []
-        top_five = int(self.num_of_people*0.05)
         sixty_percent = int(self.num_of_people*0.6)
         temp_fitness = 0
         best_string = ''
@@ -130,8 +153,6 @@ class Population:
             new_people.append(Person(p.get_code(), 0, deepcopy(best_dict)))
         for p in new_people:
             p.update_code()
-
-
         self.prepering_for_crossover()
 
         random_indexes = random.sample(range(len(self.people)), sixty_percent)
@@ -196,12 +217,8 @@ class Population:
         new_alphabet1 = {k: v for k, v in zip(keys, crossover_result1_no_dups)}
         new_alphabet2 = {k: v for k, v in zip(keys, crossover_result2_no_dups)}
 
-        #print("before: " + str(person1.get_alphabet()))
         person1.alphabet = new_alphabet1
-        #print("after: " + str(person1.get_alphabet()))
-        #print("before: " + str(person1.get_new_code()))
         person1.update_code()
-        #print("after: " + str(person1.get_new_code()))
         person2.alphabet = new_alphabet2
         person2.update_code()
 

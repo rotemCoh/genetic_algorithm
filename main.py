@@ -1,10 +1,11 @@
 from Person import Person
 from Population import Population
+from Population_darvin import Population_darvin
 import random
 def main():
     with open('enc.txt', 'r') as file:
         given_code = file.read().replace('\n', '')
-    test = Population(given_code, 200)
+    test = Population_darvin(given_code, 200,3)
     test.generate_random_population()
     flag_for_generation = 0
     best_string = ""
@@ -40,22 +41,6 @@ def main():
         # Iterate over dictionary items and write them to the file
         for key, value in best_dict.items():
             file.write(key.lower() + " " + value + "\n")
-
-    #return best_string
-    # print(best_string)
-    # print(test.generations)
-    #for q in test.people:
-     #  print("new :" + str(i.get_new_code()))
-    # for p in test.people:
-    #     # print(p.get_fitness())
-    #     p.mutate()
-
-    # taco = test.get_people()
-    # for t in taco:
-    #     print(t.get_code())
-
-    #selected_people = random.sample(test.get_people(), 2)
-
 
 if __name__ == "__main__":
     main()
