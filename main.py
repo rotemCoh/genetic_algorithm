@@ -1,11 +1,14 @@
 from Person import Person
 from Population import Population
 from Population_darvin import Population_darvin
+from Population_lamark import Population_lamark
 import random
 def main():
     with open('enc.txt', 'r') as file:
         given_code = file.read().replace('\n', '')
-    test = Population_darvin(given_code, 200,3)
+    #test = Population_darvin(given_code, 200,6)
+    #test = Population_lamark(given_code, 200,6)
+    test = Population(given_code, 200)
     test.generate_random_population()
     flag_for_generation = 0
     best_string = ""

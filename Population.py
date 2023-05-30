@@ -122,7 +122,6 @@ class Population:
                 temp_fitness = p.get_fitness()
                 best_string = p.get_new_code()
                 best_dict = p.get_alphabet()
-        print(temp_fitness)
         amount = temp_fitness/10
         amount = math.ceil((self.num_of_people/100)*amount)
 
@@ -146,7 +145,10 @@ class Population:
         self.people = new_people
         #print("population leangth: " +str(len(self.people)))
         self.generations = self.generations + 1
-        print(self.generations)
+        print("Genaration number: " + str(self.generations))
+        print("fitness grade: " + str(temp_fitness))
+        print("Number of calls to fitness function per generation: " + str(self.generations))
+        print("Number of calls to fitness in total " + str(int(self.generations)*int(self.num_of_people)))
         return best_string , best_dict, temp_fitness
 
     def prepering_for_crossover(self):
