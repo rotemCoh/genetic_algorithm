@@ -12,8 +12,8 @@ class Population_darvin:
         self.generations = 0
         self.num_mutations = num_mutations
         self.num_of_people = num_of_people
-        letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
-        word_list_from_file = self.words_from_dict("dict.txt")
+        self.letter2_freq = self.load_letter_frequency("Letter2_Freq.txt")
+        self.word_list_from_file = self.words_from_dict("dict.txt")
     def generate_random_alphabet(self):
         alphabet = {'A': 't', 'B': 'g', 'C': 'o', 'D': 'n', 'E': 'b', 'F': 'h', 'G': 'i', 'H': 'v', 'I': 'j', 'J': 'z', 'K': 'k', 'L': 'y', 'M': 'w', 'N': 'm', 'O': 'x', 'P': 'd', 'Q': 'q', 'R': 'p', 'S': 'c', 'T': 'a', 'U': 'r',
         'V': 'e', 'W': 's', 'X': 'u', 'Y': 'f', 'Z': 'l'}
@@ -142,7 +142,7 @@ class Population_darvin:
                 temp_fitness = p.get_fitness()
                 best_string = p.get_new_code()
                 best_dict = p.get_alphabet()
-        print(temp_fitness)
+        #print(temp_fitness)
         amount = temp_fitness/10
         amount = math.ceil((self.num_of_people/100)*amount)
 
@@ -164,7 +164,10 @@ class Population_darvin:
         self.people = new_people
         #print("population leangth: " +str(len(self.people)))
         self.generations = self.generations + 1
-        print(self.generations)
+        print("Genaration number: " + str(self.generations))
+        print("fitness grade: " + str(temp_fitness))
+        print("Number of calls to fitness function per generation: " + str(int(self.generations)*2))
+        print("Number of calls to fitness in total " + str(int(self.generations)*int(self.num_of_people)*2))
         return best_string , best_dict, temp_fitness
 
     def prepering_for_crossover(self):
